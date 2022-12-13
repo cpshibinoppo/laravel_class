@@ -29,7 +29,7 @@ class SendWelcomeMailListener
      * @param  \App\Events\NewUserCreatedEvent  $event
      * @return void
      */
-    public function handle(NewUserCreatedEvent $event)
+    public function handle( $event)
     {
 
         $admins = User::find(1);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\NewUserCreatedEvent;
+use App\Jobs\NewUserJob;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserAge;
@@ -43,9 +44,9 @@ class WebRouteContoller extends Controller
     }
     public function adduser()
     {
-        request()->validate([
-            'name' => 'required',
-        ]);
+        // request()->validate([
+        //     'name' => 'required',
+        // ]);
         $input = [
             'name' => request('name'),
             'email' => request('email'),
@@ -53,16 +54,18 @@ class WebRouteContoller extends Controller
             'address' => request('address'),
             'dob' => request('date_of_birth')
         ];
-        if(request()->hasFile('image')){
-            $extension = request('image')->extension();
-            $fileName = 'user_pic_'.time().'.'.$extension;
-            request('image')->storeAs('images',$fileName);
-            $input['image'] = $fileName;
-        }
+        // if(request()->hasFile('image')){
+        //     $extension = request('image')->extension();
+        //     $fileName = 'user_pic_'.time().'.'.$extension;
+        //     request('image')->storeAs('images',$fileName);
+        //     $input['image'] = $fileName;
+        // }
         // return $input;
         $user = User::create($input);
 
-        NewUserCreatedEvent::dispatch($user);
+        // NewUserCreatedEvent::dispatch($user);
+        NewUserJob::dispatch($user);
+
         // cache()->forget('users');
         return redirect('home')->with('message', 'User created successfully');
     }
