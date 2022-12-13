@@ -46,13 +46,22 @@ class WebRouteContoller extends Controller
         request()->validate([
             'name' => 'required',
         ]);
-        $user = User::create([
+        $input = [
             'name' => request('name'),
             'email' => request('email'),
             "number" => request('number'),
             'address' => request('address'),
             'dob' => request('date_of_birth')
-        ]);
+        ];
+        if(request()->hasFile('image')){
+            $extension = request('image')->extension();
+            $fileName = 'user_pic_'.time().'.'.$extension;
+            request('image')->storeAs('images',$fileName);
+            $input['image'] = $fileName;
+        }
+        // return $input;
+        $user = User::create($input);
+
         NewUserCreatedEvent::dispatch($user);
         // cache()->forget('users');
         return redirect('home')->with('message', 'User created successfully');
